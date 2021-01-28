@@ -1,40 +1,48 @@
-import types from './contacts-types';    
-
 import { combineReducers } from 'redux';
-// const state = {
-//   contacts: {
-//     items: [],
-//     filter: ''
-//   }
-// }
-const initialItems = () => (JSON.parse(localStorage.getItem('contacts')) ?? []);
 
-const itemsReducer = (state = initialItems(), { type, payload }) => {
+import { createReducer } from '@reduxjs/toolkit';
 
-    // return state;
-    switch (type) {
-        case types.ADD: 
-            return [payload, ...state]
+import {addContact, deleteContact, changeFilter} from './contacts-actions';
 
-        case types.DELETE: 
-            return state.filter(({ id }) => (id !== payload));
-                
-        default:
-            return state
-    }
-}
+// const initialItems = () => (JSON.parse(localStorage.getItem('contacts')) ?? []);
 
-const filterReducer = (state = '', { type, payload }) => {
-    switch (type) {
-        case types.CHANGE_FILTER:
-            return payload
-        
-        default:
-            return state
-    }
-}
+const itemsReducer = createReducer([], {
+    [addContact]: (state, { payload }) => [payload, ...state],
+    [deleteContact]: (state, { payload }) => state.filter(({ id }) => (id !== payload))
+});
+
+const filterReducer = createReducer('', {
+    [changeFilter]: (_,{payload})=>payload
+})
+
+
 
 export default combineReducers({
     items: itemsReducer,
     filter: filterReducer
 });
+
+// const itemsReducer = (state = initialItems(), { type, payload }) => {
+
+//     // return state;
+//     switch (type) {
+//         case types.ADD: 
+//             return [payload, ...state]
+
+//         case types.DELETE: 
+//             return state.filter(({ id }) => (id !== payload));
+                
+//         default:
+//             return state
+//     }
+// }
+
+// const filterReducer = (state = '', { type, payload }) => {
+//     switch (type) {
+//         case [changeFilter]:
+//             return payload
+        
+//         default:
+//             return state
+//     }
+// }
