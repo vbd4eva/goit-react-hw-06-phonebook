@@ -1,33 +1,21 @@
-import {connect} from 'react-redux'
-
-import PropTypes from 'prop-types'
-import Notification from '../Notification/Notification'
-import s from './ContactsBook.module.css'
+import { useSelector } from 'react-redux';
+import {getContactListLength} from 'redux/contacts/contacts-selectors'
+import Notification from 'components/Notification/Notification';
+import Header from 'components/Header/Header';
+import s from './ContactsBook.module.css';
  
-function ContactsBook({bookLength, children}) {
+export default function ContactsBook({children}) {
+
+    const bookLength = useSelector(getContactListLength);
+
+    if (!bookLength) return <Notification message="PhoneBook is emty" />;
+
     return (
         <>
-            {bookLength
-                ?
-            (<>
-            <h2>Contacts</h2>
+            <Header title={'Contacts'} />
                 <div className={s.contactsContainer}>
                     {children}
                 </div>
-            </>)
-                :
-            <Notification message="PhoneBook is emty"/>
-            }
         </>
     )
 }
-
-ContactsBook.propTypes = {
-    bookLength: PropTypes.number.isRequired,
-}
-
-const mapStateToProps = ({contacts}) => ({
-    bookLength: contacts.items.length
-})
-
-export default connect(mapStateToProps)(ContactsBook)

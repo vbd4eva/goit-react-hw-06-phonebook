@@ -1,4 +1,3 @@
-// import { combineReducers } from 'redux'; 
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { persistStore, persistReducer,
   FLUSH,
@@ -10,13 +9,7 @@ import { persistStore, persistReducer,
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import logger from 'redux-logger';
 
-import contactsReducer from './contacts/contacts-reducer';
-
-// const rootReducer = combineReducers({
-//     contacts: contactsReducer
-// })
-
-// const store = createStore(rootReducer, composeWithDevTools());
+import contactsReducer from 'redux/contacts/contacts-reducer';
 
 const middleware = [...getDefaultMiddleware({
     serializableCheck: {
@@ -29,8 +22,6 @@ const persistConfig = {
   storage,
   blacklist: ['filter']
 }
-
-// const persistedReducer  = persistReducer(persistConfig, contactsReducer)
 
 export const store = configureStore({  
   reducer:  {

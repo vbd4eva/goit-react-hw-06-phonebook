@@ -1,53 +1,29 @@
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
+import {getContactList} from 'redux/contacts/contacts-selectors'
 
-import PropTypes from 'prop-types'
+import Notification from 'components/Notification/Notification'
 import ContactListItem from './ContactListItem/ContactListItem'
-import Notification from '../Notification/Notification'
 import s from './ContactList.module.css'
 
+const notificationMessages = {
+    NOTHING_FINDED: "is Nothing finded...Try to change request",
+}
 
-function ContactList({contactCards, filterValue}) {
+export default function ContactList() {
 
-    const getFilteredContacts = () => {
-        return contactCards.filter(
-            ({ name }) => name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase())
-        );
-    };
+    const contactList = useSelector(getContactList)
 
-    const contactList = getFilteredContacts();
+    if (!contactList.length) return <Notification message={notificationMessages.NOTHING_FINDED} />;
 
     return (
-        (contactList.length > 0)
-        ?
         <ul className={s.list}>
             {contactList.map(
-                ({ id, name, number }) => 
-                    (<li key={id} className={s.item}>
-                    <ContactListItem
-                            id={id}
-                            name={name}
-                            number={number}
-                        />
-                    </li>)
+                (contact) =>
+                (<li key={contact.id} className={s.item}>
+                    <ContactListItem {...contact} />
+                </li>)
             )}
         </ul>
-        :
-        <Notification message="is Nothing finded...Try to change request"/>
-            
-    )
+    );
 }
-
-ContactList.propTypes = {
-    contactCards: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-    })),
-    filterValue : PropTypes.string,
-}
-
-const mapStateToProps = ({contacts}) => ({
-    contactCards: contacts.items,
-    filterValue: contacts.filter
-})
-
-export default connect(mapStateToProps)(ContactList);
 

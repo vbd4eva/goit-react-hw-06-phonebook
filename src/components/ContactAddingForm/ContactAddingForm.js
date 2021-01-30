@@ -1,22 +1,24 @@
 import { useState } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { v4 as uuidv4 } from 'uuid';
 
 import { toast } from 'react-toastify';
 
-import PropTypes from 'prop-types';
-
-import * as actions from '../../redux/contacts/contacts-actions';
+import {addContact, changeFilter} from 'redux/contacts/contacts-actions';
+import {getContacts} from 'redux/contacts/contacts-selectors';
 
 
 import s from './ContactAddingForm.module.css';
 
 
-const ContactAddingForm = ({contactCards, addContactCart,changeFilter}) => { 
+export default function ContactAddingForm () { 
     
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
+
+    const contactCards = useSelector(getContacts);
+    const dispatch = useDispatch();
 
     const stateRange = {
         name: setName,
@@ -76,13 +78,14 @@ const ContactAddingForm = ({contactCards, addContactCart,changeFilter}) => {
         </form>
     );
 
+    
     function handleContactCart(newContactCart){   
         const doubleContact = findInContacts(newContactCart.name);  
         if (doubleContact) { 
             onDoubleAddingReaction(doubleContact);
             return;
         }
-        addContactCart(newContactCart);
+        dispatch(addContact(newContactCart));
     }
 
     function findInContacts(newContactName) {
@@ -92,23 +95,6 @@ const ContactAddingForm = ({contactCards, addContactCart,changeFilter}) => {
     function onDoubleAddingReaction(doubleContact) { 
         const { name } = doubleContact; 
         toast(name + ' is already in contacts.');
-        changeFilter(name);
+        dispatch(changeFilter(name));
     }  
 }
-
-ContactAddingForm.propTypes = {
-    contactCards: PropTypes.array.isRequired,
-    addContactCart: PropTypes.func.isRequired,
-    changeFilter: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = ({ contacts }) => ({
-    contactCards: contacts.items,
-});
-
-const mapDispatchToProps = dispatch => ({
-    addContactCart: newContact => dispatch(actions.addContact(newContact)),
-    changeFilter: value => dispatch(actions.changeFilter(value))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactAddingForm);
